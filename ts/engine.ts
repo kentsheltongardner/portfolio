@@ -128,7 +128,7 @@ export default class Engine {
             [2, 3],
             [3, 4]
         ]
-        const cassiopeia = create_constellation(400.0, -1500.0, 500, 500, 0.9, cassiopeia_big_star_data, cassiopeia_connection_data, 3.0)
+        const cassiopeia = create_constellation(400.0, -1500.0, 500, 500, 0.9, cassiopeia_big_star_data, cassiopeia_connection_data, 1.5)
 
 
         this.constellations.push(orion)
