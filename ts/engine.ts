@@ -384,17 +384,19 @@ export default class Engine {
         const distant_x         = center_x + (black_hole_x - center_x) * 0.5
         const distant_y         = center_y + (black_hole_y - center_y) * 0.5
 
+        this.render_black_hole(distant_x, distant_y)
         this.render_stars(distant_x, distant_y)
 
         this.precompute_constellations(distant_x, distant_y)
         this.render_constellations(time)
+
 
         this.render_suns(distant_x, distant_y)
         this.render_planets(distant_x, distant_y)
         this.render_bullets(distant_x, distant_y)
         this.render_exhaust_clouds(distant_x, distant_y)
         this.render_ship(distant_x, distant_y)
-        this.render_black_hole(distant_x, distant_y)
+
     }
     mod(n: number, m: number) {
         return ((n % m) + m) % m
