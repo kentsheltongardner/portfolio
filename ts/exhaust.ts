@@ -1,4 +1,4 @@
-export default class ExhaustCloud {
+export default class Exhaust {
     static readonly SPEED_MIN       = 120.0
     static readonly SPEED_MAX       = 150.0
     static readonly SPREAD          = 0.3

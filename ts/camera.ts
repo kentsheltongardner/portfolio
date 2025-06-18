@@ -14,4 +14,8 @@ export default class Camera {
         const viewport_y = world_y - this.y + window.innerHeight / 2
         return new Point(viewport_x, viewport_y)
     }
+    track(x: number, y: number) {
+        this.x += (x - this.x) * 0.125
+        this.y += (y - this.y) * 0.125
+    }
 }

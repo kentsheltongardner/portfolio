@@ -46,6 +46,7 @@ nav {
 }
 
 .tag {
+    /* contain: layout paint; */
     display: none;
     flex-direction: column;
     gap: 10px;

@@ -1,20 +1,21 @@
-const BASE_TIME_TO_LIVE = 0.4;
-const TIME_TO_LIVE_VARIANCE = 0.15;
-const SPREAD = 0.1;
 export default class Exhaust {
+    static SPEED_MIN = 120.0;
+    static SPEED_MAX = 150.0;
+    static SPREAD = 0.3;
+    static MIN_RADIUS = 2;
+    static MAX_RADIUS = 10;
+    static TIME_TO_LIVE = 0.4;
     x;
     y;
     vx;
     vy;
     creation_time;
-    time_to_live;
     constructor(x, y, vx, vy, creation_time) {
         this.x = x;
         this.y = y;
         this.vx = vx;
         this.vy = vy;
         this.creation_time = creation_time;
-        this.time_to_live = BASE_TIME_TO_LIVE + Math.random() * TIME_TO_LIVE_VARIANCE - TIME_TO_LIVE_VARIANCE / 2;
     }
     update(delta_time) {
         this.x += delta_time * this.vx;

@@ -5,7 +5,7 @@ import Camera           from './camera.js'
 import ColorStop        from './color_stop.js'
 import Connection       from './connection.js'
 import Constellation    from './constellation.js'
-import ExhaustCloud     from './exhaust_cloud.js'
+import Exhaust          from './exhaust.js'
 import Planet           from './planet.js'
 import Point            from './point.js'
 import Ship             from './ship.js'
@@ -26,25 +26,34 @@ export default class Engine {
     key_press_down  = false
     key_press_right = false
 
-    bullets         = new Array<Bullet>()
-    exhaust_clouds  = new Array<ExhaustCloud>()
-    tags            = this.load_tags()
-    tag_map         = this.load_tag_map()
     canvas          = <HTMLCanvasElement>document.getElementById('main-canvas')
     context         = this.canvas.getContext('2d')!
+    tags            = new Array<Tag>()
+    tag_map         = new Map<string, Tag>()
+
+    bullets         = new Array<Bullet>()
+    exhaust         = new Array<Exhaust>()
     camera          = new Camera()
     ship            = new Ship()
-    suns            = this.create_suns()
-    stars           = this.generate_stars()
+    suns            = new Array<Sun>
+    stars           = new Array<Star>
     constellations  = new Array<Constellation>()
-    planets         = this.create_planets()
+    planets         = new Array<Planet>
     black_hole      = new BlackHole(-1900.0, 1400.0)
+    
     last_time       = 0.0
 
     constructor() {
-        this.create_constellations()
-        this.resize_canvas()
+        this.load_tags()
+        this.load_tag_map()
         this.reposition_tags()
+
+        this.create_constellations()
+        this.generate_stars()
+        this.create_suns()
+        this.create_planets()
+        this.resize_canvas()
+
         this.add_event_listeners()
         this.loop(0)
     }
@@ -136,35 +145,36 @@ export default class Engine {
 
     load_tags() {
         const elements = document.querySelectorAll<HTMLElement>('.tag')
-        const tags = new Array<Tag>()
         for (const element of elements) {
             element.style.display   = 'flex'
             const x                 = Number.parseInt(element.dataset.x!)
             const y                 = Number.parseInt(element.dataset.y!)
             const tag               = new Tag(element, x, y)
-            tags.push(tag)
+            this.tags.push(tag)
         }
-        return tags
     }
     load_tag_map() {
-        const tag_map = new Map<string, Tag>()
         for (const tag of this.tags) {
-            tag_map.set(tag.element.id, tag)
+            this.tag_map.set(tag.element.id, tag)
         }
-        return tag_map
+    }
+    reposition_tags() {
+        for (const tag of this.tags) {
+            const viewport_position     = this.camera.world_to_viewport(tag.x, tag.y)
+            const x                     = viewport_position.x
+            const y                     = viewport_position.y
+            tag.element.style.transform = `translate3d(calc(${x}px - 50%), calc(${y}px - 50%), 0)`
+        }
     }
 
     generate_stars() {
-        const star_count    = Math.floor(window.innerWidth * window.innerHeight * STAR_DENSITY)
-        const stars         = new Array<Star>(star_count)
+        const star_count = Math.floor(window.innerWidth * window.innerHeight * STAR_DENSITY)
+        this.stars = new Array<Star>(star_count)
         for (let i = 0; i < star_count; i++) {
-            stars[i] = new Star()
+            this.stars[i] = new Star()
         }
-        return stars
     }
     create_suns() {
-        const suns = new Array<Sun>()
-
         const color_stops_1 = [
             new ColorStop(0.0, '#ffffff'),
             new ColorStop(0.2, '#ffffff'),
@@ -181,14 +191,10 @@ export default class Engine {
             new ColorStop(0.6, '#4000ff80'),
             new ColorStop(1.0, '#00f0'),
         ]
-
-        suns.push(new Sun(-300.0, -500.0, 200.0, color_stops_1))
-        suns.push(new Sun(2300.0, 2200.0, 50.0, color_stops_2))
-
-        return suns
+        this.suns.push(new Sun(-300.0, -500.0, 200.0, color_stops_1))
+        this.suns.push(new Sun(2300.0, 2200.0, 50.0, color_stops_2))
     }
     create_planets() {
-        const planets       = new Array<Planet>()
         const dwarf         = this.suns[1]
         const color_stops   = [
             new ColorStop(0.0,  '#607090'),
@@ -199,21 +205,10 @@ export default class Engine {
             new ColorStop(1.0,  '#0000')
         ]
 
-        planets.push(new Planet(15.0,   dwarf,  1.2,    200.0, 0.15,    color_stops, this.tag_map.get('tower')!))
-        planets.push(new Planet(12.0,   dwarf,  2.7,    350.0, 0.06,    color_stops, this.tag_map.get('snap')!))
-        planets.push(new Planet(23.0,   dwarf,  3.0,    600.0, -0.025,  color_stops, this.tag_map.get('scrawl')!))
-        planets.push(new Planet(9.0,    dwarf,  0.7,    130.0, 0.125,   color_stops, this.tag_map.get('merger')!))
-
-        return planets
-    }
-
-    reposition_tags() {
-        for (const tag of this.tags) {
-            const viewport_position     = this.camera.world_to_viewport(tag.x, tag.y)
-            const x                     = viewport_position.x
-            const y                     = viewport_position.y
-            tag.element.style.transform = `translate3d(calc(${x}px - 50%), calc(${y}px - 50%), 0)`
-        }
+        this.planets.push(new Planet(15.0,   dwarf,  1.2,    150.0,  0.15,   color_stops, this.tag_map.get('tower')!))
+        this.planets.push(new Planet(12.0,   dwarf,  4.3,    225.0,  0.06,   color_stops, this.tag_map.get('snap')!))
+        this.planets.push(new Planet(23.0,   dwarf,  3.0,    350.0,  -0.025, color_stops, this.tag_map.get('scrawl')!))
+        this.planets.push(new Planet(9.0,    dwarf,  5.9,    80.0,   0.125,  color_stops, this.tag_map.get('merger')!))
     }
 
     add_event_listeners() {
@@ -239,7 +234,7 @@ export default class Engine {
         })
 
         window.addEventListener('resize', () => {
-            this.stars = this.generate_stars()
+            this.generate_stars()
             this.resize_canvas()
         })
     }
@@ -292,7 +287,12 @@ export default class Engine {
         const delta_time    = time - this.last_time
         this.last_time      = time
         this.update(delta_time)
+
+        performance.mark("render-start")
         this.render(time)
+        performance.mark("render-end")
+        performance.measure("Render Frame", "render-start", "render-end")
+
         requestAnimationFrame(time_ms => { this.loop(time_ms) })
     }
 
@@ -302,22 +302,8 @@ export default class Engine {
         const left      = this.key_press_a || this.key_press_left
         const right     = this.key_press_d || this.key_press_right
 
-
         if (forward || this.ship.seeking) {
-            const count = Math.round(Math.random() * delta_time * 200)
-            for (let i = 0; i < count; i++) {
-                const theta         = this.ship.orientation + Math.PI + (Math.random() - 0.5) * ExhaustCloud.SPREAD
-                const speed         = ExhaustCloud.SPEED_MIN + Math.random() * (ExhaustCloud.SPEED_MAX - ExhaustCloud.SPEED_MIN)
-                const cos           = Math.cos(theta)
-                const sin           = Math.sin(theta)
-                const vx            = cos * speed
-                const vy            = sin * speed
-                const variance      = Math.random() * 7.0
-                const x             = this.ship.x + cos * variance
-                const y             = this.ship.y + sin * variance
-                const exhaust_cloud = new ExhaustCloud(x, y, vx, vy, this.last_time)
-                this.exhaust_clouds.push(exhaust_cloud)
-            }
+            this.create_exhaust(delta_time)
         }
 
         if (this.ship.seeking) {
@@ -325,25 +311,46 @@ export default class Engine {
         } else {
             this.ship.fly(delta_time, forward, backward, left, right)
         }
-        
         for (const bullet of this.bullets) {
             bullet.update(delta_time)
         }
-        for (const exhaust_cloud of this.exhaust_clouds) {
-            exhaust_cloud.update(delta_time)
+        for (const exhaust of this.exhaust) {
+            exhaust.update(delta_time)
         }
         for (const planet of this.planets) {
             planet.update(delta_time)
         }
+
         this.remove_dead_bullets()
-        this.remove_dead_exhaust_clouds()
-
-        this.camera.x   += (this.ship.x - this.camera.x) * 0.125
-        this.camera.y   += (this.ship.y - this.camera.y) * 0.125
-
+        this.remove_dead_exhaust()
         this.reposition_tags()
+        this.camera.track(this.ship.x, this.ship.y)
     }
 
+    create_exhaust(delta_time: number) {
+        const count = Math.round(Math.random() * delta_time * 200)
+        for (let i = 0; i < count; i++) {
+            const theta     = this.ship.orientation + Math.PI + (Math.random() - 0.5) * Exhaust.SPREAD
+            const speed     = Exhaust.SPEED_MIN + Math.random() * (Exhaust.SPEED_MAX - Exhaust.SPEED_MIN)
+            const cos       = Math.cos(theta)
+            const sin       = Math.sin(theta)
+            const vx        = cos * speed
+            const vy        = sin * speed
+            const variance  = Math.random() * 7.0
+            const x         = this.ship.x + cos * variance
+            const y         = this.ship.y + sin * variance
+            const exhaust   = new Exhaust(x, y, vx, vy, this.last_time)
+            this.exhaust.push(exhaust)
+        }
+    }
+    remove_dead_exhaust() {
+        for (let i = this.exhaust.length - 1; i >= 0; i--) {
+            const exhaust = this.exhaust[i]
+            if (this.last_time - exhaust.creation_time > Exhaust.TIME_TO_LIVE) {
+                this.exhaust.splice(i, 1)
+            }
+        }
+    }
     remove_dead_bullets() {
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const bullet = this.bullets[i]
@@ -352,17 +359,6 @@ export default class Engine {
             }
         }
     }
-    remove_dead_exhaust_clouds() {
-        for (let i = this.exhaust_clouds.length - 1; i >= 0; i--) {
-            const exhaust_cloud = this.exhaust_clouds[i]
-            if (this.last_time - exhaust_cloud.creation_time > ExhaustCloud.TIME_TO_LIVE) {
-                this.exhaust_clouds.splice(i, 1)
-            }
-        }
-    }
-
-
-
 
     resize_canvas() {
         this.canvas.width   = window.innerWidth
@@ -490,13 +486,13 @@ export default class Engine {
         this.context.fill()
     }
     render_exhaust_clouds(black_hole_x: number, black_hole_y: number) {
-        for (const exhaust_cloud of this.exhaust_clouds) {
-            const viewport_position = this.camera.world_to_viewport(exhaust_cloud.x, exhaust_cloud.y)
+        for (const exhaust of this.exhaust) {
+            const viewport_position = this.camera.world_to_viewport(exhaust.x, exhaust.y)
             const position          = this.distorted_position(viewport_position.x, viewport_position.y, black_hole_x, black_hole_y)
             const x                 = position.x
             const y                 = position.y
-            const scalar            = (this.last_time - exhaust_cloud.creation_time) / ExhaustCloud.TIME_TO_LIVE
-            const radius            = (ExhaustCloud.MIN_RADIUS + (ExhaustCloud.MAX_RADIUS - ExhaustCloud.MIN_RADIUS) * scalar)
+            const scalar            = (this.last_time - exhaust.creation_time) / Exhaust.TIME_TO_LIVE
+            const radius            = (Exhaust.MIN_RADIUS + (Exhaust.MAX_RADIUS - Exhaust.MIN_RADIUS) * scalar)
             const r                 = 1.0 - scalar
             const g                 = Math.pow(r, 2)
             const b                 = Math.pow(g, 4)
