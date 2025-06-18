@@ -92,7 +92,7 @@ export default class Engine {
             [3, 4],
             [3, 5],
             [4, 6],
-            [5, 6],
+            [5, 6]
         ];
         const big_dipper = create_constellation(-200.0, -2500.0, 512, 410, 0.8, big_dipper_big_star_data, big_dipper_connection_data, 1.0);
         const cassiopeia_big_star_data = [
