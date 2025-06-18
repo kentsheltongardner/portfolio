@@ -11,6 +11,10 @@ const DAMPING_FACTOR = 0.95;
 const MINIMUM_SEEK_DISTANCE = 200.0;
 const MINIMUM_SEEK_DISTANCE_SQUARED = MINIMUM_SEEK_DISTANCE * MINIMUM_SEEK_DISTANCE;
 export default class Ship {
+    static SIDE_ANGLE = 2.3;
+    static SIDE_LENGTH = 30.0;
+    static NOSE_LENGTH = 30.0;
+    static REAR_LENGTH = 8.0;
     x = 0.0;
     y = 0.0;
     target_x = 0.0;

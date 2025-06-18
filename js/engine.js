@@ -165,7 +165,7 @@ export default class Engine {
     create_planets() {
         const planets = new Array();
         const dwarf = this.suns[1];
-        const color_stops_1 = [
+        const color_stops = [
             new ColorStop(0.0, '#607090'),
             new ColorStop(0.45, '#504050'),
             new ColorStop(0.65, '#201000'),
@@ -173,9 +173,10 @@ export default class Engine {
             new ColorStop(0.95, '#080400'),
             new ColorStop(1.0, '#0000')
         ];
-        planets.push(new Planet(15.0, dwarf, 1.2, 200.0, 0.15, color_stops_1, this.tag_map.get('tower')));
-        planets.push(new Planet(12.0, dwarf, 2.7, 350.0, 0.06, color_stops_1, this.tag_map.get('snap')));
-        planets.push(new Planet(23.0, dwarf, 3.0, 600.0, -0.025, color_stops_1, this.tag_map.get('scrawl')));
+        planets.push(new Planet(15.0, dwarf, 1.2, 200.0, 0.15, color_stops, this.tag_map.get('tower')));
+        planets.push(new Planet(12.0, dwarf, 2.7, 350.0, 0.06, color_stops, this.tag_map.get('snap')));
+        planets.push(new Planet(23.0, dwarf, 3.0, 600.0, -0.025, color_stops, this.tag_map.get('scrawl')));
+        planets.push(new Planet(9.0, dwarf, 0.7, 130.0, 0.125, color_stops, this.tag_map.get('merger')));
         return planets;
     }
     reposition_tags() {
@@ -355,7 +356,7 @@ export default class Engine {
     }
     render(time) {
         //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        this.context.fillStyle = '#000000a0';
+        this.context.fillStyle = '#000008a0';
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         const black_hole_position = this.camera.world_to_viewport(this.black_hole.x, this.black_hole.y);
         const black_hole_x = black_hole_position.x;
@@ -524,19 +525,27 @@ export default class Engine {
         const position = this.distorted_position(viewport_position.x, viewport_position.y, black_hole_x, black_hole_y);
         const x = position.x;
         const y = position.y;
-        const line_x = x + Math.cos(this.ship.orientation) * 40.0;
-        const line_y = y + Math.sin(this.ship.orientation) * 40.0;
-        this.context.fillStyle = '#505058';
+        const theta_0 = this.ship.orientation;
+        const theta_1 = theta_0 + Ship.SIDE_ANGLE;
+        const theta_2 = theta_0 + Math.PI;
+        const theta_3 = theta_0 - Ship.SIDE_ANGLE;
+        const x_0 = x + Math.cos(theta_0) * Ship.NOSE_LENGTH;
+        const x_1 = x + Math.cos(theta_1) * Ship.SIDE_LENGTH;
+        const x_2 = x + Math.cos(theta_2) * Ship.REAR_LENGTH;
+        const x_3 = x + Math.cos(theta_3) * Ship.SIDE_LENGTH;
+        const y_0 = y + Math.sin(theta_0) * Ship.NOSE_LENGTH;
+        const y_1 = y + Math.sin(theta_1) * Ship.SIDE_LENGTH;
+        const y_2 = y + Math.sin(theta_2) * Ship.REAR_LENGTH;
+        const y_3 = y + Math.sin(theta_3) * Ship.SIDE_LENGTH;
+        this.context.fillStyle = '#111';
         this.context.strokeStyle = '#fff8';
         this.context.beginPath();
-        this.context.moveTo(x, y);
-        this.context.lineTo(line_x, line_y);
-        this.context.stroke();
-        this.context.beginPath();
-        this.context.arc(x, y, 20.0, 0, TAU);
+        this.context.moveTo(x_0, y_0);
+        this.context.lineTo(x_1, y_1);
+        this.context.lineTo(x_2, y_2);
+        this.context.lineTo(x_3, y_3);
+        this.context.closePath();
         this.context.fill();
-        this.context.beginPath();
-        this.context.arc(x, y, 20.0, 0, TAU);
         this.context.stroke();
     }
     render_black_hole(black_hole_x, black_hole_y) {

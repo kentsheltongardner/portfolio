@@ -12,6 +12,11 @@ const MINIMUM_SEEK_DISTANCE         = 200.0
 const MINIMUM_SEEK_DISTANCE_SQUARED = MINIMUM_SEEK_DISTANCE * MINIMUM_SEEK_DISTANCE
 
 export default class Ship {
+    static readonly SIDE_ANGLE  = 2.3
+    static readonly SIDE_LENGTH = 30.0
+    static readonly NOSE_LENGTH = 30.0
+    static readonly REAR_LENGTH = 8.0
+
     x           = 0.0
     y           = 0.0
     target_x    = 0.0
