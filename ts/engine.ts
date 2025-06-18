@@ -1,17 +1,17 @@
-import BigStar      from './big_star.js'
-import BlackHole    from './black_hole.js'
-import Bullet       from './bullet.js'
-import Camera       from './camera.js'
-import ColorStop    from './color_stop.js'
-import Connection from './connection.js'
-import Constellation from './constellation.js'
-import ExhaustCloud from './exhaust_cloud.js'
-import Planet       from './planet.js'
-import Point        from './point.js'
-import Ship         from './ship.js'
-import Star         from './star.js'
-import Sun          from './sun.js'
-import Tag          from './tag.js'
+import BigStar          from './big_star.js'
+import BlackHole        from './black_hole.js'
+import Bullet           from './bullet.js'
+import Camera           from './camera.js'
+import ColorStop        from './color_stop.js'
+import Connection       from './connection.js'
+import Constellation    from './constellation.js'
+import ExhaustCloud     from './exhaust_cloud.js'
+import Planet           from './planet.js'
+import Point            from './point.js'
+import Ship             from './ship.js'
+import Star             from './star.js'
+import Sun              from './sun.js'
+import Tag              from './tag.js'
 
 const STAR_DENSITY  = 0.001
 const TAU           = Math.PI * 2
@@ -30,7 +30,6 @@ export default class Engine {
     exhaust_clouds  = new Array<ExhaustCloud>()
     tags            = this.load_tags()
     tag_map         = this.load_tag_map()
-
     canvas          = <HTMLCanvasElement>document.getElementById('main-canvas')
     context         = this.canvas.getContext('2d')!
     camera          = new Camera()
@@ -130,7 +129,6 @@ export default class Engine {
         ]
         const cassiopeia = create_constellation(400.0, -1500.0, 500, 500, 0.9, cassiopeia_big_star_data, cassiopeia_connection_data, 1.5)
 
-
         this.constellations.push(orion)
         this.constellations.push(big_dipper)
         this.constellations.push(cassiopeia)
@@ -193,12 +191,12 @@ export default class Engine {
         const planets       = new Array<Planet>()
         const dwarf         = this.suns[1]
         const color_stops   = [
-            new ColorStop(0.0, '#607090'),
+            new ColorStop(0.0,  '#607090'),
             new ColorStop(0.45, '#504050'),
             new ColorStop(0.65, '#201000'),
-            new ColorStop(0.8, '#100800'),
+            new ColorStop(0.8,  '#100800'),
             new ColorStop(0.95, '#080400'),
-            new ColorStop(1.0, '#0000')
+            new ColorStop(1.0,  '#0000')
         ]
 
         planets.push(new Planet(15.0,   dwarf,  1.2,    200.0, 0.15,    color_stops, this.tag_map.get('tower')!))
@@ -308,15 +306,15 @@ export default class Engine {
         if (forward || this.ship.seeking) {
             const count = Math.round(Math.random() * delta_time * 200)
             for (let i = 0; i < count; i++) {
-                const theta = this.ship.orientation + Math.PI + (Math.random() - 0.5) * ExhaustCloud.SPREAD
-                const speed = ExhaustCloud.SPEED_MIN + Math.random() * (ExhaustCloud.SPEED_MAX - ExhaustCloud.SPEED_MIN)
-                const cos = Math.cos(theta)
-                const sin = Math.sin(theta)
-                const vx = cos * speed
-                const vy = sin * speed
-                const variance = Math.random() * 7.0
-                const x = this.ship.x + cos * variance
-                const y = this.ship.y + sin * variance
+                const theta         = this.ship.orientation + Math.PI + (Math.random() - 0.5) * ExhaustCloud.SPREAD
+                const speed         = ExhaustCloud.SPEED_MIN + Math.random() * (ExhaustCloud.SPEED_MAX - ExhaustCloud.SPEED_MIN)
+                const cos           = Math.cos(theta)
+                const sin           = Math.sin(theta)
+                const vx            = cos * speed
+                const vy            = sin * speed
+                const variance      = Math.random() * 7.0
+                const x             = this.ship.x + cos * variance
+                const y             = this.ship.y + sin * variance
                 const exhaust_cloud = new ExhaustCloud(x, y, vx, vy, this.last_time)
                 this.exhaust_clouds.push(exhaust_cloud)
             }
@@ -374,15 +372,15 @@ export default class Engine {
     render(time: number) {
         //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
-        this.context.fillStyle = '#000008a0'
+        this.context.fillStyle      = '#000008a0'
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-        const black_hole_position = this.camera.world_to_viewport(this.black_hole.x, this.black_hole.y)
-        const black_hole_x      = black_hole_position.x
-        const black_hole_y      = black_hole_position.y
-        const center_x          = window.innerWidth / 2.0
-        const center_y          = window.innerHeight / 2.0
-        const distant_x         = center_x + (black_hole_x - center_x) * 0.5
-        const distant_y         = center_y + (black_hole_y - center_y) * 0.5
+        const black_hole_position   = this.camera.world_to_viewport(this.black_hole.x, this.black_hole.y)
+        const black_hole_x          = black_hole_position.x
+        const black_hole_y          = black_hole_position.y
+        const center_x              = window.innerWidth / 2.0
+        const center_y              = window.innerHeight / 2.0
+        const distant_x             = center_x + (black_hole_x - center_x) * 0.5
+        const distant_y             = center_y + (black_hole_y - center_y) * 0.5
 
         this.render_black_hole(distant_x, distant_y)
         this.render_stars(distant_x, distant_y)
@@ -390,13 +388,11 @@ export default class Engine {
         this.precompute_constellations(distant_x, distant_y)
         this.render_constellations(time)
 
-
         this.render_suns(distant_x, distant_y)
         this.render_planets(distant_x, distant_y)
         this.render_bullets(distant_x, distant_y)
         this.render_exhaust_clouds(distant_x, distant_y)
         this.render_ship(distant_x, distant_y)
-
     }
     mod(n: number, m: number) {
         return ((n % m) + m) % m
