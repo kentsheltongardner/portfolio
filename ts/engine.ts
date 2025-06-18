@@ -201,9 +201,9 @@ export default class Engine {
             new ColorStop(1.0, '#0000')
         ]
 
-        planets.push(new Planet(15.0, dwarf, 1.2, 200.0, 0.15, color_stops_1, this.tag_map.get('globs')!))
-        planets.push(new Planet(12.0, dwarf, 2.7, 350.0, 0.06, color_stops_1, this.tag_map.get('arithmagician')!))
-        planets.push(new Planet(23.0, dwarf, 3.0, 600.0, -0.025, color_stops_1, this.tag_map.get('tower')!))
+        planets.push(new Planet(15.0, dwarf, 1.2, 200.0, 0.15, color_stops_1, this.tag_map.get('tower')!))
+        planets.push(new Planet(12.0, dwarf, 2.7, 350.0, 0.06, color_stops_1, this.tag_map.get('snap')!))
+        planets.push(new Planet(23.0, dwarf, 3.0, 600.0, -0.025, color_stops_1, this.tag_map.get('scrawl')!))
 
         return planets
     }
