@@ -1,0 +1,79 @@
+@font-face {
+    font-family: "exo2";
+    src: url("./res/fonts/exo2.ttf");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-family: "exo2";
+    box-sizing: border-box;
+    user-select: none;
+}
+
+
+#main-canvas {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    z-index: -1;
+}
+
+nav {
+    position: fixed;
+    width: 100vw;
+    bottom: 15px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.nav-button {
+    font-size: 24px;
+    padding: 15px;
+    cursor: pointer;
+    opacity: 0.75;
+    transition: 0.5s;
+    /* text-shadow: 0 0 2px white; */
+    letter-spacing: 2px;
+}
+
+.nav-button:hover {
+    opacity: 1;
+    text-shadow: 0 0 20px white;
+}
+
+.tag {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    text-shadow: black 0 0 5px;
+    will-change: transform;
+    max-width: 300px;
+    border: #fff4 solid 1px;
+    padding: 2px 12px 10px 12px;
+    border-radius: 10px;
+    background-color: #fff1;
+}
+
+.tag h1 {
+    text-align: center;
+    letter-spacing: 4px;
+}
+.tag p {
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-align: justify;
+    user-select: text;
+    line-height: 24px;
+}
+.tag p::selection {
+    background-color: #fff4;
+}
+
+.small-tag {
+    padding: 6px 12px 10px 12px;
+}
