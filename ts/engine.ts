@@ -449,7 +449,7 @@ export default class Engine {
         }
     }
     render_connections(connections: Connection[], position: number) {
-        const alpha = 0.25 * Math.pow((Math.sin(position) + 1) / 2, 8)
+        const alpha = 0.25 * Math.pow((Math.sin(position) + 1) / 2, 4)
         this.context.strokeStyle = `rgba(255, 255, 255, ${alpha})`
         this.context.beginPath()
         for (const connection of connections) {
