@@ -170,7 +170,7 @@ export default class Engine {
             new ColorStop(1.0, '#00f0'),
         ];
         this.suns.push(new Sun(-300.0, -500.0, 200.0, color_stops_1));
-        this.suns.push(new Sun(5400.0, 4900.0, 50.0, color_stops_2));
+        this.suns.push(new Sun(5500.0, 4600.0, 50.0, color_stops_2));
     }
     create_planets() {
         const dwarf = this.suns[1];
