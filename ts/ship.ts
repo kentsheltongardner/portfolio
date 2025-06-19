@@ -92,4 +92,7 @@ export default class Ship {
             this.begin_seeking(target_x, target_y)
         }
     }
+    speed() {
+        return Math.sqrt(this.vx * this.vx + this.vy * this.vy)
+    }
 }

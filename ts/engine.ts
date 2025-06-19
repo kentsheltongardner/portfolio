@@ -26,22 +26,27 @@ export default class Engine {
     key_press_down  = false
     key_press_right = false
 
-    canvas          = <HTMLCanvasElement>document.getElementById('main-canvas')
-    context         = this.canvas.getContext('2d')!
-    tags            = new Array<Tag>()
-    tag_map         = new Map<string, Tag>()
+    canvas                  = <HTMLCanvasElement>document.getElementById('main-canvas')
+    context                 = this.canvas.getContext('2d')!
+    tags                    = new Array<Tag>()
+    tag_map                 = new Map<string, Tag>()
 
-    bullets         = new Array<Bullet>()
-    exhaust         = new Array<Exhaust>()
-    camera          = new Camera()
-    ship            = new Ship()
-    suns            = new Array<Sun>
-    stars           = new Array<Star>
-    constellations  = new Array<Constellation>()
-    planets         = new Array<Planet>
-    black_hole      = new BlackHole(-1900.0, 1400.0)
+    bullets                 = new Array<Bullet>()
+    exhaust                 = new Array<Exhaust>()
+    camera                  = new Camera()
+    ship                    = new Ship()
+    suns                    = new Array<Sun>
+    stars                   = new Array<Star>
+    constellations          = new Array<Constellation>()
+    planets                 = new Array<Planet>
+    black_hole              = new BlackHole(-1900.0, 1400.0)
+    ambience                = new Audio('/res/music/ambience.mp3')
+    engine                  = new Audio('/res/sound/engine_loop.mp3')
     
-    last_time       = 0.0
+    sound_on                = false
+    engine_volume_target    = 0.0
+    last_time               = 0.0
+
 
     constructor() {
         this.load_tags()
@@ -239,11 +244,18 @@ export default class Engine {
         })
     }
     mouse_down() {
+        if (!this.sound_on) {
+            this.activate_sound()
+        }
+
         if (this.ship.seeking) return
 
-        const vx = this.ship.vx + Math.cos(this.ship.orientation) * Bullet.SPEED
-        const vy = this.ship.vy + Math.sin(this.ship.orientation) * Bullet.SPEED
-        const bullet = new Bullet(this.ship.x, this.ship.y, vx, vy, this.last_time)
+        const vx            = this.ship.vx + Math.cos(this.ship.orientation) * Bullet.SPEED
+        const vy            = this.ship.vy + Math.sin(this.ship.orientation) * Bullet.SPEED
+        const bullet        = new Bullet(this.ship.x, this.ship.y, vx, vy, this.last_time)
+        const shot_sound    = new Audio('/res/sound/shot.wav')
+        shot_sound.volume   = 0.25
+        shot_sound.play()
         this.bullets.push(bullet)
     }
     mouse_move(e: MouseEvent) {
@@ -255,6 +267,10 @@ export default class Engine {
         this.ship.orientation   = Math.atan2(dy, dx)
     }
     key_down(e: KeyboardEvent) {
+        if (!this.sound_on) {
+            this.activate_sound()
+        }
+
         switch (e.code) {
             case 'KeyW':        this.key_press_w        = true;     break
             case 'KeyA':        this.key_press_a        = true;     break
@@ -287,13 +303,31 @@ export default class Engine {
         const delta_time    = time - this.last_time
         this.last_time      = time
         this.update(delta_time)
-
-        performance.mark("render-start")
+        this.adjust_engine_volume()
         this.render(time)
-        performance.mark("render-end")
-        performance.measure("Render Frame", "render-start", "render-end")
 
         requestAnimationFrame(time_ms => { this.loop(time_ms) })
+    }
+
+    activate_sound() {
+        this.sound_on           = true
+        this.ambience.loop      = true
+        this.ambience.volume    = 0.125
+        this.ambience.play()
+
+        this.engine.volume      = 0.0
+        this.engine.loop        = true
+        this.engine.play()
+    }
+    adjust_engine_volume() {
+        const forward                   = this.key_press_w || this.key_press_up
+        if (forward || this.ship.seeking) {
+            const scaled_speed          = this.ship.speed() * 0.05
+            this.engine_volume_target   = scaled_speed / (scaled_speed + 1.0)
+        } else {
+            this.engine_volume_target   = 0.0
+        }
+        this.engine.volume              = this.engine.volume + (this.engine_volume_target - this.engine.volume) * 0.05
     }
 
     update(delta_time: number) {
