@@ -1,13 +1,13 @@
 const ACCELERATION_FORWARD = 60.0;
 const ACCELERATION_BACKWARD = 30.0;
 const ACCELERATION_LATERAL = 30.0;
-const SEEK_DAMPING_FACTOR = 0.93;
+const SEEK_DAMPING_FACTOR = 7.0;
 const TAU = Math.PI * 2;
 const THETA_FORWARD = 0.0;
 const THETA_RIGHT = 0.25 * TAU;
 const THETA_BACKWARD = 0.5 * TAU;
 const THETA_LEFT = 0.75 * TAU;
-const DAMPING_FACTOR = 0.95;
+const DAMPING_FACTOR = 3.0;
 const MINIMUM_SEEK_DISTANCE = 200.0;
 const MINIMUM_SEEK_DISTANCE_SQUARED = MINIMUM_SEEK_DISTANCE * MINIMUM_SEEK_DISTANCE;
 export default class Ship {
@@ -32,14 +32,14 @@ export default class Ship {
         const dy = y - this.y;
         return dx * dx + dy * dy;
     }
-    damp() {
+    damp(delta_time) {
         if (this.seeking) {
-            this.vx *= SEEK_DAMPING_FACTOR;
-            this.vy *= SEEK_DAMPING_FACTOR;
+            this.vx -= this.vx * SEEK_DAMPING_FACTOR * delta_time;
+            this.vy -= this.vy * SEEK_DAMPING_FACTOR * delta_time;
         }
         else {
-            this.vx *= DAMPING_FACTOR;
-            this.vy *= DAMPING_FACTOR;
+            this.vx -= this.vx * DAMPING_FACTOR * delta_time;
+            this.vy -= this.vy * DAMPING_FACTOR * delta_time;
         }
     }
     move(delta_time) {
@@ -52,9 +52,9 @@ export default class Ship {
         const dy = this.target_y - this.y;
         const distance_squared = dx * dx + dy * dy;
         const distance = Math.sqrt(distance_squared);
-        const acceleration = 0.1 * distance;
+        const acceleration = 10.0 * distance * delta_time;
         this.accelerate(this.orientation + THETA_FORWARD, acceleration);
-        this.damp();
+        this.damp(delta_time);
         this.move(delta_time);
         if (!this.can_seek(this.target_x, this.target_y)) {
             this.seeking = false;
@@ -69,7 +69,7 @@ export default class Ship {
             this.accelerate(this.orientation + THETA_BACKWARD, ACCELERATION_BACKWARD);
         if (left)
             this.accelerate(this.orientation + THETA_LEFT, ACCELERATION_LATERAL);
-        this.damp();
+        this.damp(delta_time);
         this.move(delta_time);
     }
     can_seek(target_x, target_y) {

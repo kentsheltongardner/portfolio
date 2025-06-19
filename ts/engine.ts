@@ -13,18 +13,18 @@ import Star             from './star.js'
 import Sun              from './sun.js'
 import Tag              from './tag.js'
 
-const STAR_DENSITY  = 0.001
-const TAU           = Math.PI * 2
+const STAR_DENSITY          = 0.001
+const TAU                   = Math.PI * 2
 
 export default class Engine {
-    key_press_w     = false
-    key_press_a     = false
-    key_press_s     = false
-    key_press_d     = false
-    key_press_up    = false
-    key_press_left  = false
-    key_press_down  = false
-    key_press_right = false
+    key_press_w             = false
+    key_press_a             = false
+    key_press_s             = false
+    key_press_d             = false
+    key_press_up            = false
+    key_press_left          = false
+    key_press_down          = false
+    key_press_right         = false
 
     canvas                  = <HTMLCanvasElement>document.getElementById('main-canvas')
     context                 = this.canvas.getContext('2d')!
