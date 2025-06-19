@@ -106,7 +106,7 @@ export default class Engine {
             [4, 5],
             [4, 6]
         ]
-        const orion = create_constellation(900.0, -2100.0, 490, 686, 1.0, orion_big_star_data, orion_connection_data, 2.0)
+        const orion = create_constellation(1500.0, -4200.0, 490, 686, 1.0, orion_big_star_data, orion_connection_data, 2.0)
 
         const big_dipper_big_star_data = [
             [132, 132, 10.0,    0.7     ],
@@ -126,7 +126,7 @@ export default class Engine {
             [4, 6],
             [5, 6]
         ]
-        const big_dipper = create_constellation(-200.0, -2500.0, 512, 410, 0.8, big_dipper_big_star_data, big_dipper_connection_data, 1.0)
+        const big_dipper = create_constellation(0.0, -4400.0, 512, 410, 0.8, big_dipper_big_star_data, big_dipper_connection_data, 1.0)
 
         const cassiopeia_big_star_data = [
             [162, 594, 10.0,    0.82    ],
@@ -141,7 +141,7 @@ export default class Engine {
             [2, 3],
             [3, 4]
         ]
-        const cassiopeia = create_constellation(400.0, -1500.0, 500, 500, 0.9, cassiopeia_big_star_data, cassiopeia_connection_data, 1.5)
+        const cassiopeia = create_constellation(800.0, -3500.0, 500, 500, 0.9, cassiopeia_big_star_data, cassiopeia_connection_data, 1.5)
 
         this.constellations.push(orion)
         this.constellations.push(big_dipper)
@@ -197,7 +197,7 @@ export default class Engine {
             new ColorStop(1.0, '#00f0'),
         ]
         this.suns.push(new Sun(-300.0, -500.0, 200.0, color_stops_1))
-        this.suns.push(new Sun(2300.0, 2200.0, 50.0, color_stops_2))
+        this.suns.push(new Sun(5400.0, 4900.0, 50.0, color_stops_2))
     }
     create_planets() {
         const dwarf         = this.suns[1]
