@@ -1,6 +1,6 @@
-const ACCELERATION_FORWARD = 60.0;
-const ACCELERATION_BACKWARD = 30.0;
-const ACCELERATION_LATERAL = 30.0;
+const ACCELERATION_FORWARD = 4000.0;
+const ACCELERATION_BACKWARD = 2000.0;
+const ACCELERATION_LATERAL = 2000.0;
 const SEEK_DAMPING_FACTOR = 7.0;
 const TAU = Math.PI * 2;
 const THETA_FORWARD = 0.0;
@@ -23,9 +23,9 @@ export default class Ship {
     vy = 0.0;
     orientation = 0.0;
     seeking = false;
-    accelerate(theta, acceleration) {
-        this.vx += Math.cos(theta) * acceleration;
-        this.vy += Math.sin(theta) * acceleration;
+    accelerate(theta, acceleration, delta_time) {
+        this.vx += Math.cos(theta) * acceleration * delta_time;
+        this.vy += Math.sin(theta) * acceleration * delta_time;
     }
     distance_squared(x, y) {
         const dx = x - this.x;
@@ -52,8 +52,8 @@ export default class Ship {
         const dy = this.target_y - this.y;
         const distance_squared = dx * dx + dy * dy;
         const distance = Math.sqrt(distance_squared);
-        const acceleration = 10.0 * distance * delta_time;
-        this.accelerate(this.orientation + THETA_FORWARD, acceleration);
+        const acceleration = 10.0 * distance;
+        this.accelerate(this.orientation + THETA_FORWARD, acceleration, delta_time);
         this.damp(delta_time);
         this.move(delta_time);
         if (!this.can_seek(this.target_x, this.target_y)) {
@@ -62,13 +62,13 @@ export default class Ship {
     }
     fly(delta_time, forward, backward, left, right) {
         if (forward)
-            this.accelerate(this.orientation + THETA_FORWARD, ACCELERATION_FORWARD);
+            this.accelerate(this.orientation + THETA_FORWARD, ACCELERATION_FORWARD, delta_time);
         if (right)
-            this.accelerate(this.orientation + THETA_RIGHT, ACCELERATION_LATERAL);
+            this.accelerate(this.orientation + THETA_RIGHT, ACCELERATION_LATERAL, delta_time);
         if (backward)
-            this.accelerate(this.orientation + THETA_BACKWARD, ACCELERATION_BACKWARD);
+            this.accelerate(this.orientation + THETA_BACKWARD, ACCELERATION_BACKWARD, delta_time);
         if (left)
-            this.accelerate(this.orientation + THETA_LEFT, ACCELERATION_LATERAL);
+            this.accelerate(this.orientation + THETA_LEFT, ACCELERATION_LATERAL, delta_time);
         this.damp(delta_time);
         this.move(delta_time);
     }

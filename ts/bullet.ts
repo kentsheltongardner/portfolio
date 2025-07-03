@@ -1,6 +1,7 @@
 export default class Bullet {
-    static readonly SPEED    = 1000.0
-    static readonly LIFETIME = 0.75
+    static readonly SPEED       = 1000.0
+    static readonly LIFETIME    = 0.75
+    static readonly RADIUS      = 2.0
 
     x:              number
     y:              number

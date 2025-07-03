@@ -5,6 +5,7 @@ import Camera from './camera.js';
 import ColorStop from './color_stop.js';
 import Connection from './connection.js';
 import Constellation from './constellation.js';
+import Enemy from './enemy.js';
 import Exhaust from './exhaust.js';
 import Planet from './planet.js';
 import Point from './point.js';
@@ -27,6 +28,7 @@ export default class Engine {
     context = this.canvas.getContext('2d');
     tags = new Array();
     tag_map = new Map();
+    enemies = new Array();
     bullets = new Array();
     exhaust = new Array();
     camera = new Camera();
@@ -50,9 +52,29 @@ export default class Engine {
         this.create_suns();
         this.create_planets();
         this.resize_canvas();
+        //this.create_enemies()
         this.add_event_listeners();
         this.loop(0);
     }
+    // create_enemies() {
+    //     for (let i = 0; i < 10; i++) {
+    //         this.create_enemy()
+    //     }
+    // }
+    // create_enemy() {
+    //     const min_distance  = 2000.0
+    //     const max_distance  = 10000.0
+    //     const theta         = Math.random() * TAU
+    //     const distance      = min_distance + Math.random() * (max_distance - min_distance)
+    //     const x             = Math.cos(theta) * distance
+    //     const y             = Math.sin(theta) * distance
+    //     this.enemies.push(new Enemy(x, y))
+    // }
+    // spawn_enemy(delta_time: number) {
+    //     if (Math.random() < delta_time * 0.1) {
+    //         this.create_enemy()
+    //     }
+    // }
     create_constellations() {
         const create_constellation = (base_x, base_y, center_x, center_y, scale, big_star_data, connection_data, period) => {
             const x = (x) => { return base_x + (x - center_x) * scale; };
@@ -186,6 +208,7 @@ export default class Engine {
         this.planets.push(new Planet(12.0, dwarf, 4.3, 225.0, 0.06, color_stops, this.tag_map.get('snap')));
         this.planets.push(new Planet(23.0, dwarf, 3.0, 350.0, -0.025, color_stops, this.tag_map.get('scrawl')));
         this.planets.push(new Planet(9.0, dwarf, 5.9, 80.0, 0.125, color_stops, this.tag_map.get('merger')));
+        this.planets.push(new Planet(36.0, dwarf, 0.4, 400.0, 0.05, color_stops, this.tag_map.get('coins')));
     }
     add_event_listeners() {
         window.addEventListener('mousedown', () => { this.mouse_down(); });
@@ -345,11 +368,19 @@ export default class Engine {
         for (const planet of this.planets) {
             planet.update(delta_time);
         }
+        //this.spawn_enemy(delta_time)
+        //this.navigate_enemies(delta_time)
+        // this.destroy_enemies()
         this.remove_dead_bullets();
         this.remove_dead_exhaust();
         this.reposition_tags();
         this.camera.track(this.ship.x, this.ship.y);
     }
+    // navigate_enemies(delta_time: number) {
+    //     for (const enemy of this.enemies) {
+    //         enemy.navigate(this.ship, delta_time)
+    //     }
+    // }
     create_exhaust(delta_time) {
         const count = Math.round(Math.random() * delta_time * 200);
         for (let i = 0; i < count; i++) {
@@ -382,6 +413,21 @@ export default class Engine {
             }
         }
     }
+    // destroy_enemies() {
+    //     const sum_of_squared_radii = Bullet.RADIUS * Bullet.RADIUS + Enemy.RADIUS * Enemy.RADIUS
+    //     for (let i = 0; i < this.bullets.length; i++) {
+    //         const bullet = this.bullets[i]
+    //         for (let j = 0; j < this.enemies.length; j++) {
+    //             const enemy = this.enemies[j]
+    //             const dx                = bullet.x - enemy.x
+    //             const dy                = bullet.y - enemy.y
+    //             const distance_squared  = dx * dx + dy * dy
+    //             if (distance_squared >= sum_of_squared_radii) continue
+    //             this.bullets.splice(i, 1)
+    //             this.enemies.splice(j, 1)
+    //         }
+    //     }
+    // }
     resize_canvas() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -406,6 +452,7 @@ export default class Engine {
         this.render_bullets(distant_x, distant_y);
         this.render_exhaust_clouds(distant_x, distant_y);
         this.render_ship(distant_x, distant_y);
+        this.render_enemies(distant_x, distant_y);
     }
     mod(n, m) {
         return ((n % m) + m) % m;
@@ -493,7 +540,7 @@ export default class Engine {
             const x = position.x;
             const y = position.y;
             this.context.moveTo(x, y);
-            this.context.arc(x, y, 2, 0, TAU);
+            this.context.arc(x, y, Bullet.RADIUS, 0, TAU);
         }
         this.context.fill();
     }
@@ -551,6 +598,24 @@ export default class Engine {
         }
         this.context.fillStyle = gradient;
         this.context.fillRect(x - planet.radius, y - planet.radius, planet.diameter, planet.diameter);
+    }
+    render_enemies(black_hole_x, black_hole_y) {
+        for (const enemy of this.enemies) {
+            this.render_enemy(enemy, black_hole_x, black_hole_y);
+        }
+    }
+    render_enemy(enemy, black_hole_x, black_hole_y) {
+        const viewport_position = this.camera.world_to_viewport(enemy.x, enemy.y);
+        const position = this.distorted_position(viewport_position.x, viewport_position.y, black_hole_x, black_hole_y);
+        const x = position.x;
+        const y = position.y;
+        this.context.fillStyle = '#200';
+        this.context.strokeStyle = '#fff8';
+        this.context.beginPath();
+        this.context.moveTo(x, y);
+        this.context.arc(x, y, Enemy.RADIUS, 0, TAU);
+        this.context.fill();
+        this.context.stroke();
     }
     render_ship(black_hole_x, black_hole_y) {
         const viewport_position = this.camera.world_to_viewport(this.ship.x, this.ship.y);

@@ -1,6 +1,7 @@
 export default class Bullet {
     static SPEED = 1000.0;
     static LIFETIME = 0.75;
+    static RADIUS = 2.0;
     x;
     y;
     vx;
