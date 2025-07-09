@@ -240,6 +240,7 @@ export default class Engine {
         this.planets.push(new Planet(9.0,    dwarf,  5.9,    80.0,   0.125,  color_stops, this.tag_map.get('merger')!))
         this.planets.push(new Planet(36.0,   dwarf,  0.4,    400.0,  0.05,   color_stops, this.tag_map.get('coins')!))
         this.planets.push(new Planet(7.0,    dwarf,  0.9,    500.0,  0.025,  color_stops, this.tag_map.get('globs')!))
+        this.planets.push(new Planet(14.0,   dwarf,  2.6,    700.0,  0.0125, color_stops, this.tag_map.get('arithmagician')!))
     }
 
     add_event_listeners() {
