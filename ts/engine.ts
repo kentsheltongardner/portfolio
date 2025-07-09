@@ -239,6 +239,7 @@ export default class Engine {
         this.planets.push(new Planet(23.0,   dwarf,  3.0,    350.0,  -0.025, color_stops, this.tag_map.get('scrawl')!))
         this.planets.push(new Planet(9.0,    dwarf,  5.9,    80.0,   0.125,  color_stops, this.tag_map.get('merger')!))
         this.planets.push(new Planet(36.0,   dwarf,  0.4,    400.0,  0.05,   color_stops, this.tag_map.get('coins')!))
+        this.planets.push(new Planet(7.0,    dwarf,  0.9,    500.0,  0.025,  color_stops, this.tag_map.get('globs')!))
     }
 
     add_event_listeners() {
